@@ -1,8 +1,8 @@
-import z from "zod";
-import dotenv from "dotenv"
+import z from 'zod';
+import dotenv from 'dotenv';
+import { logger } from '@common/logger';
 
 dotenv.config();
-
 
 /**
  * All environment variables are validated at boot time.
@@ -44,10 +44,8 @@ function loadEnv(): Env {
   const parsed = envSchema.safeParse(process.env);
 
   if (!parsed.success) {
-    // eslint-disable-next-line no-console
-    console.error('Invalid environment variables:');
-    // eslint-disable-next-line no-console
-    console.error(parsed.error.flatten().fieldErrors);
+    logger.error('Invalid environment variables:');
+    logger.error(parsed.error.flatten().fieldErrors);
     process.exit(1);
   }
 
