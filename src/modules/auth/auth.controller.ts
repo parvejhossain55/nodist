@@ -51,4 +51,9 @@ export const authController = {
     const user = await authService.getCurrentUser(req.user!.sub);
     ApiResponse.ok(res, user);
   }),
+
+  changePassword: catchAsync(async (req: Request, res: Response) => {
+    await authService.changePassword(req.user!.sub, req.body);
+    ApiResponse.ok(res, null, 'Password changed successfully');
+  }),
 };

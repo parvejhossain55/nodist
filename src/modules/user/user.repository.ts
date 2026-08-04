@@ -12,4 +12,8 @@ export class UserRepository extends BaseMongoRepository<IUser> implements IUserR
     if (withPassword) query.select('+password');
     return query.exec();
   }
+
+  async findByIDWithPassword(id: string): Promise<IUser | null> {
+    return this.model.findById(id).select('+password').exec();
+  }
 }

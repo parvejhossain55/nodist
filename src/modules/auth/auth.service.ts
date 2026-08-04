@@ -3,7 +3,7 @@ import { config } from '@config/index';
 import { redisClient } from '@database/redis/connection';
 import { IUser } from '@modules/user/user.model';
 import { IUserRepository } from '@modules/user/user.repository.interface';
-import { LoginInput, RegisterInput } from './auth.validation';
+import { ChangePasswordInput, LoginInput, RegisterInput } from './auth.validation';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -25,6 +25,16 @@ const REFRESH_TOKEN_PREFIX = 'refresh_token:';
 
 export class AuthService {
   constructor(private readonly userRepository: IUserRepository) {}
+
+  private async issueTokens(user: IUser): Promise<AuthResult> {
+    const accessToken = generateAccessToken({ sub: user.id, role: user.role });
+    const { refreshToken, jti } = generateRefreshToken(user.id);
+
+    const ttlSeconds = parseExpiryToSeconds(config.jwt.refreshExpiresIn);
+    await redisClient.set(`${REFRESH_TOKEN_PREFIX}${user.id}`, jti, 'EX', ttlSeconds);
+
+    return { user: sanitize(user), accessToken, refreshToken };
+  }
 
   async register(input: RegisterInput): Promise<AuthResult> {
     const existing = await this.userRepository.findByEmail(input.email, true);
@@ -73,13 +83,16 @@ export class AuthService {
     return sanitize(user);
   }
 
-  private async issueTokens(user: IUser): Promise<AuthResult> {
-    const accessToken = generateAccessToken({ sub: user.id, role: user.role });
-    const { refreshToken, jti } = generateRefreshToken(user.id);
+  async changePassword(userId: string, input: ChangePasswordInput): Promise<void> {
+    const user = await this.userRepository.findByIDWithPassword(userId);
+    if (!user) throw new UnauthorizedError('User no longer exists');
 
-    const ttlSeconds = parseExpiryToSeconds(config.jwt.refreshExpiresIn);
-    await redisClient.set(`${REFRESH_TOKEN_PREFIX}${user.id}`, jti, 'EX', ttlSeconds);
+    const isValid = await user.comparePassword(input.currentPassword);
+    if (!isValid) throw new UnauthorizedError('Current password is incorrect');
 
-    return { user: sanitize(user), accessToken, refreshToken };
+    user.password = input.newPassword;
+    await user.save();
+
+    await redisClient.del(`${REFRESH_TOKEN_PREFIX}${userId}`);
   }
 }
