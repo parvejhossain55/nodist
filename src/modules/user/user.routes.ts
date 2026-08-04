@@ -2,16 +2,10 @@ import { Router } from 'express';
 import { validate } from '@common/middlewares/validate';
 import { authenticate, authorize } from '@common/middlewares/authenticate';
 import { userController } from './user.controller';
-import {
-  createUserSchema,
-  getUserSchema,
-  listUsersSchema,
-  updateUserSchema,
-} from './user.validation';
+import { getUserSchema, listUsersSchema, updateUserSchema } from './user.validation';
 
 const router = Router();
 
-router.post('/', validate(createUserSchema), userController.register);
 router.get('/', authenticate, validate(listUsersSchema), userController.list);
 
 router

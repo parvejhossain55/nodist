@@ -7,11 +7,6 @@ import { UserService } from './user.service';
 const userService = new UserService(new UserRepository());
 
 export const userController = {
-  register: catchAsync(async (req: Request, res: Response) => {
-    const user = await userService.register(req.body);
-    ApiResponse.created(res, user, 'User register successfully');
-  }),
-
   getById: catchAsync(async (req: Request, res: Response) => {
     const user = await userService.getById(req.params.id);
     ApiResponse.ok(res, user);

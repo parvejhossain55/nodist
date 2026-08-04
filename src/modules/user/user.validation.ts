@@ -1,13 +1,5 @@
 import { z } from 'zod';
 
-export const createUserSchema = z.object({
-  body: z.object({
-    name: z.string().min(2).max(100),
-    email: z.string().email(),
-    password: z.string().min(8).max(72),
-  }),
-});
-
 export const updateUserSchema = z.object({
   body: z.object({
     name: z.string().min(2).max(100).optional(),
@@ -27,5 +19,4 @@ export const listUsersSchema = z.object({
   }),
 });
 
-export type CreateUserInput = z.infer<typeof createUserSchema>['body'];
 export type UpdateUserInput = z.infer<typeof updateUserSchema>['body'];
