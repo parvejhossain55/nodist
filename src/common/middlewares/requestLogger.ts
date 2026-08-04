@@ -16,7 +16,7 @@ export const requestLogger = pinoHttp({
     return 'info';
   },
   autoLogging: {
-    ignore: (req) => req.url === '/health/live',
+    ignore: (req) => req.url === `${config.apiPrefix}/health/live`,
   },
   serializers: config.isDevelopment
     ? {
