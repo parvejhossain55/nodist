@@ -19,13 +19,13 @@ export function generateAccessToken(payload: AccessTokenPayload): string {
   });
 }
 
-export function generateRefreshToken(userId: string): { token: string; jti: string } {
+export function generateRefreshToken(userId: string): { refreshToken: string; jti: string } {
   const jti = randomUUID();
   const token = jwt.sign({ sub: userId, jti } as RefreshTokenPayload, config.jwt.refreshSecret, {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expiresIn: config.jwt.refreshExpiresIn as any,
   });
-  return { token, jti };
+  return { refreshToken: token, jti };
 }
 
 export function verifyAccessToken(token: string): AccessTokenPayload {
@@ -34,4 +34,12 @@ export function verifyAccessToken(token: string): AccessTokenPayload {
 
 export function verifyRefreshToken(token: string): RefreshTokenPayload {
   return jwt.verify(token, config.jwt.refreshSecret) as RefreshTokenPayload;
+}
+
+export function parseExpiryToSeconds(expiresIn: string): number {
+  const match = expiresIn.match(/^(\d+)([smhd])$/);
+  if (!match) return 7 * 24 * 60 * 60; // fallback: 7 days
+  const [, value, unit] = match;
+  const multiplier = { s: 1, m: 60, h: 3600, d: 86400 }[unit] ?? 86400;
+  return Number(value) * multiplier;
 }
