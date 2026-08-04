@@ -9,6 +9,7 @@ export interface IUser extends Document {
   password: string;
   role: UserRole;
   isActive: boolean;
+  isEmailVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidate: string): Promise<boolean>;
@@ -28,6 +29,7 @@ const userSchema = new Schema<IUser>(
     password: { type: String, required: true, minlength: 8, select: false },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     isActive: { type: Boolean, default: true },
+    isEmailVerified: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
