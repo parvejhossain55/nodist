@@ -38,8 +38,9 @@ export function authenticate(req: Request, _res: Response, next: NextFunction): 
 export function authorize(...allowedRoles: string[]) {
   return (req: Request, _res: Response, next: NextFunction): void => {
     if (!req.user) throw new UnauthorizedError();
+
     if (allowedRoles.length && !allowedRoles.includes(req.user.role)) {
-      throw new UnauthorizedError('Insufficiend permission');
+      throw new UnauthorizedError('Insufficient permission');
     }
 
     next();
