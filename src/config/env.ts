@@ -35,6 +35,16 @@ const envSchema = z.object({
 
   // Logging
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
+
+  // SMTP
+  SMTP_HOST: z.string().min(1, 'SMTP_HOST is required'),
+  SMTP_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_USER: z.string().min(1, 'SMTP_USER is required'),
+  SMTP_PASSWORD: z.string().min(1, 'SMTP_PASSWORD is required'),
+  SMTP_FROM: z.string().email().default('noreply@nodist.dev'),
+
+  // Frontend URL — reset link বানানোর জন্য
+  FRONTEND_URL: z.string().url().default('http://localhost:3000'),
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -36,4 +36,14 @@ export const config = {
   log: {
     level: env.LOG_LEVEL,
   },
+
+  smtp: {
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
+    user: env.SMTP_USER,
+    password: env.SMTP_PASSWORD,
+    from: env.SMTP_FROM,
+  },
+
+  frontendUrl: env.FRONTEND_URL,
 } as const;
