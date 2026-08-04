@@ -67,6 +67,12 @@ export class AuthService {
     await redisClient.del(`${REFRESH_TOKEN_PREFIX}${userId}`);
   }
 
+  async getCurrentUser(userId: string): Promise<Record<string, unknown>> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) throw new UnauthorizedError('User no longer exists');
+    return sanitize(user);
+  }
+
   private async issueTokens(user: IUser): Promise<AuthResult> {
     const accessToken = generateAccessToken({ sub: user.id, role: user.role });
     const { refreshToken, jti } = generateRefreshToken(user.id);
