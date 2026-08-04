@@ -1,23 +1,10 @@
-import { ConflictError, NotFoundError } from '@common/errors/AppError';
-import { IUser } from './user.model';
+import { NotFoundError } from '@common/errors/AppError';
 import { IUserRepository } from './user.repository.interface';
-import { CreateUserInput, UpdateUserInput } from './user.validation';
+import { UpdateUserInput } from './user.validation';
+import { sanitize } from './user.utils';
 
-function sanitize(user: IUser): Record<string, unknown> {
-  const obj = user.toObject();
-  delete (obj as { password?: string }).password;
-  return obj;
-}
 export class UserService {
   constructor(private readonly userRepository: IUserRepository) {}
-
-  async register(input: CreateUserInput) {
-    const existing = await this.userRepository.findByEmail(input.email);
-    if (existing) throw new ConflictError('Email already registered');
-
-    const user = await this.userRepository.create(input);
-    return sanitize(user);
-  }
 
   async getById(id: string) {
     const user = await this.userRepository.findById(id);
