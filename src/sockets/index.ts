@@ -13,7 +13,9 @@ export function initSocket(httpServer: HttpServer): Server {
 
   io.use((socket: Socket, next) => {
     try {
-      const token = socket.handshake.auth?.token as string | undefined;
+      console.log('Handshake auth received:', socket.handshake);
+
+      const token = socket.handshake.headers?.token as string | undefined;
       if (!token) return next(new Error('Authentication required'));
 
       const payload = verifyAccessToken(token);
