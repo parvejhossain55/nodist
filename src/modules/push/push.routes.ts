@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { validate } from '@common/middlewares/validate';
-import { authenticate } from '@common/middlewares/authenticate';
+import { authenticate, authorize } from '@common/middlewares/authenticate';
 import { pushController } from './push.controller';
 import {
   registerPushSubscriptionSchema,
@@ -15,6 +15,7 @@ router.get('/vapid-public-key', pushController.getVapidPublicKey);
 router.post(
   '/subscriptions',
   authenticate,
+  authorize('admin'),
   validate(registerPushSubscriptionSchema),
   pushController.register,
 );
