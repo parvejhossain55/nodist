@@ -6,8 +6,11 @@ import { config } from '@config/index';
 import { UserRepository } from '@modules/user/user.repository';
 import { AuthService } from './auth.service';
 import { parseExpiryToSeconds } from './auth.utils';
+import { NotificationService } from '@modules/notification/notification.service';
+import { NotificationRepository } from '@modules/notification/notification.repository';
 
-const authService = new AuthService(new UserRepository());
+const noticationService = new NotificationService(new NotificationRepository());
+const authService = new AuthService(new UserRepository(), noticationService);
 
 const REFRESH_COOKIE_NAME = 'refreshToken';
 

@@ -19,6 +19,7 @@ import {
 } from './auth.utils';
 import { sanitize } from '@modules/user/user.utils';
 import { sendEmail } from '@common/utils/mailSender';
+import { NotificationService } from '@modules/notification/notification.service';
 
 interface RefreshTokenResult {
   accessToken: string;
@@ -37,7 +38,10 @@ const EMAIL_VERIFY_TTL_SECONDS = 24 * 60 * 60; // 24 hours
 const PASSWORD_RESET_TTL_SECONDS = 15 * 60; // 15 minutes
 
 export class AuthService {
-  constructor(private readonly userRepository: IUserRepository) {}
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   private async issueTokens(user: IUser): Promise<AuthResult> {
     const accessToken = generateAccessToken({ sub: user.id, role: user.role });
@@ -139,6 +143,13 @@ export class AuthService {
       user.isEmailVerified = true;
       await user.save();
     }
+
+    await this.notificationService.create({
+      recipient: user.id,
+      type: 'welcome',
+      title: 'Welcome to Nodist!',
+      message: `Hi ${user.name}, your email has been verified and your account is now active.`,
+    });
 
     await redisClient.del(key);
   }
