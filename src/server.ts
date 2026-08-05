@@ -4,7 +4,7 @@ import { config } from '@config/index';
 import { logger } from '@common/logger';
 import { connectMongo, disconnectMongo } from '@database/mongodb/connection';
 import { connectRedis, disconnectRedis } from '@database/redis/connection';
-import { initSocket } from 'socktes/index';
+import { initSocket } from '@sockets/index';
 
 async function bootstrap(): Promise<void> {
   await connectMongo();
