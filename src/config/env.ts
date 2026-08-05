@@ -45,6 +45,11 @@ const envSchema = z.object({
 
   // Frontend URL — reset link বানানোর জন্য
   FRONTEND_URL: z.string().url().default('http://localhost:3000'),
+
+  // Web Push (VAPID) — generate keys with `pnpm generate:vapid`
+  VAPID_SUBJECT: z.string().min(1).default('mailto:noreply@nodist.dev'),
+  VAPID_PUBLIC_KEY: z.string().min(1, 'VAPID_PUBLIC_KEY is required'),
+  VAPID_PRIVATE_KEY: z.string().min(1, 'VAPID_PRIVATE_KEY is required'),
 });
 
 export type Env = z.infer<typeof envSchema>;

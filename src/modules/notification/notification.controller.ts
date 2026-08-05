@@ -3,8 +3,13 @@ import { catchAsync } from '@common/utils/catchAsync';
 import { ApiResponse } from '@common/utils/ApiResponse';
 import { NotificationService } from './notification.service';
 import { NotificationRepository } from './notification.repository';
+import { PushService } from '@modules/push/push.service';
+import { PushSubscriptionRepository } from '@modules/push/push.repository';
 
-const notificationService = new NotificationService(new NotificationRepository());
+const notificationService = new NotificationService(
+  new NotificationRepository(),
+  new PushService(new PushSubscriptionRepository()),
+);
 
 export const notificationController = {
   list: catchAsync(async (req: Request, res: Response) => {

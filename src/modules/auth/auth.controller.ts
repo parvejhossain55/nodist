@@ -8,9 +8,14 @@ import { AuthService } from './auth.service';
 import { parseExpiryToSeconds } from './auth.utils';
 import { NotificationService } from '@modules/notification/notification.service';
 import { NotificationRepository } from '@modules/notification/notification.repository';
+import { PushService } from '@modules/push/push.service';
+import { PushSubscriptionRepository } from '@modules/push/push.repository';
 
-const noticationService = new NotificationService(new NotificationRepository());
-const authService = new AuthService(new UserRepository(), noticationService);
+const notificationService = new NotificationService(
+  new NotificationRepository(),
+  new PushService(new PushSubscriptionRepository()),
+);
+const authService = new AuthService(new UserRepository(), notificationService);
 
 const REFRESH_COOKIE_NAME = 'refreshToken';
 
