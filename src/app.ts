@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import path from 'path';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
@@ -23,6 +24,8 @@ export function createApp(): Application {
   app.use(cookieParser());
   app.use(requestLogger);
   app.use(rateLimiter);
+
+  app.use(express.static(path.join(process.cwd(), 'public')));
 
   app.use(config.apiPrefix, routes);
 

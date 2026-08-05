@@ -1,12 +1,16 @@
 import { NotFoundError } from '@common/errors/AppError';
+import { logger } from '@common/logger';
 import { getIO, userRoom } from '@sockets/index';
+import { PushService } from '@modules/push/push.service';
 import { INotification } from './notification.model';
 import { INotificationRepository } from './notification.repository.interface';
 import { CreateNotificationInput } from './notification.validation';
-import { logger } from '@common/logger';
 
 export class NotificationService {
-  constructor(private readonly notificationRepository: INotificationRepository) {}
+  constructor(
+    private readonly notificationRepository: INotificationRepository,
+    private readonly pushService: PushService,
+  ) {}
 
   private emit(recipient: string, notification: INotification): void {
     try {
@@ -14,6 +18,22 @@ export class NotificationService {
       io.to(userRoom(recipient)).emit('notification', notification);
     } catch (error) {
       logger.error(error, 'Socket error');
+    }
+  }
+
+  /**
+   * Best-effort web push delivery to the recipient's subscribed devices.
+   * Failures are logged but never break the notification creation flow.
+   */
+  private async sendWebPush(notification: INotification): Promise<void> {
+    try {
+      await this.pushService.send(notification.recipient, {
+        title: notification.title,
+        message: notification.message,
+        data: notification.data,
+      });
+    } catch (error) {
+      logger.error(error, 'Web push error');
     }
   }
 
