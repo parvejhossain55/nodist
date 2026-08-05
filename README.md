@@ -2,10 +2,10 @@
 
 A modular Node.js backend template. Express + TypeScript + MongoDB + Redis, with auth, real-time notifications and web push wired up and working out of the box. Clone it, add your `.env`, and start writing your feature — not infrastructure glue.
 
-![build](https://img.shields.io/badge/build-coming_soon-lightgrey)
+<!-- ![build](https://img.shields.io/badge/build-coming_soon-lightgrey)
 ![coverage](https://img.shields.io/badge/coverage-coming_soon-lightgrey)
 ![license](https://img.shields.io/badge/license-MIT-green)
-![version](https://img.shields.io/badge/version-1.0.0-blue)
+![version](https://img.shields.io/badge/version-1.0.0-blue) -->
 
 ## Key features
 
