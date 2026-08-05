@@ -42,7 +42,7 @@ Base URL: `{API_PREFIX}/push` (default `/api/v1/push`)
 | POST   | `/subscriptions`      | Yes  | Register a device subscription                         |
 | GET    | `/subscriptions`      | Yes  | List the current user's subscriptions                  |
 | DELETE | `/subscriptions/:id`  | Yes  | Remove a subscription (owner only)                     |
-| POST   | `/send`               | Yes  | Send a push to the current user (admins can target any user via `recipient`) |
+| POST   | `/send`               | Yes  | Send a push to the user (admins can target any user via `recipient`. This route for testing right now) |
 
 ### Register a subscription
 

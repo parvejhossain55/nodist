@@ -40,6 +40,7 @@ export class NotificationService {
   async create(input: CreateNotificationInput): Promise<INotification> {
     const notification = await this.notificationRepository.create(input);
     this.emit(input.recipient, notification);
+    void this.sendWebPush(notification);
     return notification;
   }
 

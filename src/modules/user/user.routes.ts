@@ -6,7 +6,7 @@ import { getUserSchema, listUsersSchema, updateUserSchema } from './user.validat
 
 const router = Router();
 
-router.get('/', authenticate, validate(listUsersSchema), userController.list);
+router.get('/', authenticate, authorize('admin'), validate(listUsersSchema), userController.list);
 
 router
   .route('/:id')
