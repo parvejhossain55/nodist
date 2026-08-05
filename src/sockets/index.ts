@@ -13,7 +13,7 @@ export function initSocket(httpServer: HttpServer): Server {
 
   io.use((socket: Socket, next) => {
     try {
-      const token = socket.handshake.auth?.token as string | undefined;
+      const token = socket.handshake.headers?.token as string | undefined;
       if (!token) return next(new Error('Authentication required'));
 
       const payload = verifyAccessToken(token);
