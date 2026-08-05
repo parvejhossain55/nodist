@@ -13,7 +13,9 @@ export function initSocket(httpServer: HttpServer): Server {
 
   io.use((socket: Socket, next) => {
     try {
-      const token = socket.handshake.auth?.token as string | undefined;
+      console.log('Handshake auth received:', socket.handshake);
+
+      const token = socket.handshake.headers?.token as string | undefined;
       if (!token) return next(new Error('Authentication required'));
 
       const payload = verifyAccessToken(token);
@@ -25,10 +27,13 @@ export function initSocket(httpServer: HttpServer): Server {
   });
 
   io.on('connection', (socket: Socket) => {
-    logger.info({ userId: socket.data.user?.sub }, 'Socket connected');
+    const userId = socket.data.user?.sub;
+    if (userId) socket.join(userRoom(userId));
+
+    logger.info({ userId }, 'Socket connected');
 
     socket.on('disconnect', (reason) => {
-      logger.info({ userId: socket.data.user?.sub, reason }, 'Socket disconnected');
+      logger.info({ userId, reason }, 'Socket disconnected');
     });
   });
 
@@ -39,4 +44,8 @@ export function initSocket(httpServer: HttpServer): Server {
 export function getIO(): Server {
   if (!io) throw new Error('Socket.io not initialized. Call initSocket() first.');
   return io;
+}
+
+export function userRoom(userId: string): string {
+  return `user:${userId}`;
 }
