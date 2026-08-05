@@ -144,9 +144,3 @@ Three reasons, in order of importance:
 - **Copy-paste onboarding.** A new feature module is a copy of `src/modules/user` with the names changed. The base repository, error classes, validation middleware and route registry already exist, so the plumbing for a new CRUD module is essentially free.
 - **Testability.** Services and repositories depend on interfaces (`IUserRepository`, `INotificationRepository`), not on Mongoose directly. Swapping in a fake repository for tests is a constructor call away.
 - **Small, reviewable diffs.** Each module is self-contained, so a feature PR touches one folder plus the one-line entry in `modules/routes.ts`. Merges rarely collide.
-
-## What's not in this picture
-
-- **No tests yet.** The `tests/` folder is empty and no runner is configured. `TODO: verify` — the architecture above is designed so this is easy to add.
-- **No Docker / CI.** There's no Dockerfile, and `.github/workflow/CI.yaml` is an empty placeholder. `TODO: verify`.
-- **`http-status-codes` and `uuid`** are in `package.json` but unused — the code uses `randomUUID()` from Node's crypto and hardcoded status codes instead.

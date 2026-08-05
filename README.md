@@ -87,8 +87,6 @@ src/modules/user/
 | Security | helmet, cors, express-rate-limit, cookie-parser, compression |
 | Tooling | tsx, husky, lint-staged, commitlint, eslint, prettier |
 
-`http-status-codes` and `uuid` are listed in `package.json` but not imported anywhere yet. They're leftovers — safe to drop unless you have a plan for them.
-
 ## Prerequisites
 
 - **Node.js ≥ 24** — the `engines` field enforces it.
@@ -247,7 +245,7 @@ All user endpoints require auth. Deleting a user requires the `admin` role.
 
 | Method | Endpoint | Auth | Description |
 | ------ | -------- | ---- | ----------- |
-| GET | `/users?page=1&limit=20` | yes | List users (paginated) |
+| GET | `/users?page=1&limit=20` | admin | List users (paginated) |
 | GET | `/users/:id` | yes | Get one user |
 | PATCH | `/users/:id` | yes | Update `name` / `isActive` |
 | DELETE | `/users/:id` | admin | Delete a user |
@@ -316,7 +314,7 @@ socket.on('notification', (notification) => {
 ### Common pitfalls
 
 - **The server won't boot with placeholder secrets.** JWT secrets must be ≥ 32 chars and VAPID keys must be real generated keys. That's deliberate — `.env.example` placeholders are meant to be replaced.
-- **Refresh cookie path.** The cookie is scoped to `/api/v1/auth`, so cross-origin frontends need `credentials` handling; and if you change `API_PREFIX`, that path is hardcoded in `auth.controller.ts` (`TODO: verify` — the cookie path is not derived from config).
+- **Refresh cookie path.** The cookie is scoped to `/api/v1/auth`, so cross-origin frontends need `credentials` handling; and if you change `API_PREFIX`, that path is hardcoded in `auth.controller.ts:line-54`.
 - **`CORS_ORIGIN` defaults to `*`.** Fine for development, but set it explicitly before you deploy — it applies to both HTTP and socket.io.
 
 ## Testing
@@ -348,4 +346,4 @@ Pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the setup,
 
 ## License
 
-[MIT](https://github.com/parvejhossain55/nodist/blob/main/LICENSE) — the `package.json` declares MIT, though a LICENSE file hasn't been committed yet (`TODO: verify`).
+[MIT](https://github.com/parvejhossain55/nodist/blob/main/LICENSE) — see the LICENSE file for the full terms.

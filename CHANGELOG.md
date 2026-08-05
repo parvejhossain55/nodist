@@ -38,4 +38,3 @@ First tagged state of the template. Everything below was shipped feature-by-feat
 - No test suite yet (`tests/` empty, no runner configured)
 - No Dockerfile or docker-compose setup
 - `.github/workflow/CI.yaml` exists but is empty
-- `http-status-codes` and `uuid` declared in `package.json` but unused

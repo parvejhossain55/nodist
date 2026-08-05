@@ -7,7 +7,7 @@ Thanks for wanting to help. This guide covers how to get the project running loc
 1. Fork the repo and clone your fork:
 
    ```bash
-   git clone https://github.com/<your-username>/nodist.git
+   git clone https://github.com/parvejhossain55/nodist.git
    cd nodist
    ```
 
