@@ -4,6 +4,7 @@ import { config } from '@config/index';
 import { logger } from '@common/logger';
 import { connectMongo, disconnectMongo } from '@database/mongodb/connection';
 import { connectRedis, disconnectRedis } from '@database/redis/connection';
+import { initSocket } from 'socktes/index';
 
 async function bootstrap(): Promise<void> {
   await connectMongo();
@@ -11,6 +12,7 @@ async function bootstrap(): Promise<void> {
 
   const app = createApp();
   const httpServer = http.createServer(app);
+  initSocket(httpServer);
 
   const server = httpServer.listen(config.port, () => {
     logger.info(`=> Nodist running on port ${config.port} [${config.env}]`);
