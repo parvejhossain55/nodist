@@ -46,4 +46,42 @@ export const authController = {
     res.clearCookie(REFRESH_COOKIE_NAME, { path: '/api/v1/auth' });
     ApiResponse.ok(res, null, 'Logged out successfully');
   }),
+
+  me: catchAsync(async (req: Request, res: Response) => {
+    const user = await authService.getCurrentUser(req.user!.sub);
+    ApiResponse.ok(res, user);
+  }),
+
+  changePassword: catchAsync(async (req: Request, res: Response) => {
+    await authService.changePassword(req.user!.sub, req.body);
+    ApiResponse.ok(res, null, 'Password changed successfully');
+  }),
+
+  verifyEmail: catchAsync(async (req: Request, res: Response) => {
+    await authService.verifyEmail(req.body.token);
+    ApiResponse.ok(res, null, 'Email verified successfully');
+  }),
+
+  resendVerification: catchAsync(async (req: Request, res: Response) => {
+    await authService.resendVerification(req.body.email);
+    ApiResponse.ok(
+      res,
+      null,
+      'If an account with that email exists and is unverified, a verification link has been sent',
+    );
+  }),
+
+  forgotPassword: catchAsync(async (req: Request, res: Response) => {
+    await authService.forgotPassword(req.body.email);
+    ApiResponse.ok(
+      res,
+      null,
+      'If an account with that email exists, a password reset link has been sent',
+    );
+  }),
+
+  resetPassword: catchAsync(async (req: Request, res: Response) => {
+    await authService.resetPassword(req.body);
+    ApiResponse.ok(res, null, 'Password reset successfully');
+  }),
 };

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { randomUUID } from 'crypto';
+import { createHash, randomBytes, randomUUID } from 'crypto';
 import { config } from '@config/index';
 
 export interface AccessTokenPayload {
@@ -42,4 +42,17 @@ export function parseExpiryToSeconds(expiresIn: string): number {
   const [, value, unit] = match;
   const multiplier = { s: 1, m: 60, h: 3600, d: 86400 }[unit] ?? 86400;
   return Number(value) * multiplier;
+}
+
+/**
+ * Generates a URL-safe random token (used for email verification / password reset links).
+ * The raw token is sent to the user via email; only its hash is persisted (Redis),
+ * so a leaked store never exposes a usable token.
+ */
+export function generateSecureToken(): string {
+  return randomBytes(32).toString('hex');
+}
+
+export function hashToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
 }
