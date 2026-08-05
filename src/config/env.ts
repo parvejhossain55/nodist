@@ -1,7 +1,8 @@
 import z from 'zod';
 import dotenv from 'dotenv';
 
-dotenv.config();
+// quiet: dotenv v17 logs an "injected env" banner on every boot otherwise.
+dotenv.config({ quiet: true });
 
 /**
  * All environment variables are validated at boot time.

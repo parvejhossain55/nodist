@@ -1,2 +1,7 @@
 allowBuilds:
   esbuild: false
+  # mongodb-memory-server's postinstall pre-downloads the mongod binary
+  # (faster integration test startup); unrs-resolver ships prebuilt napi
+  # bindings used by eslint's import resolver.
+  mongodb-memory-server: true
+  unrs-resolver: true

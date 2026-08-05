@@ -4,6 +4,12 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+
+- **Test suite** — Jest with a unit project (services, utils, validation, middlewares, fully mocked) and an integration project (supertest against the real HTTP stack with `mongodb-memory-server` + `ioredis-mock`)
+- **CI workflow** — `.github/workflow/CI.yaml` now runs lint, type-check, unit + integration tests with coverage, and the build on every push/PR
+- **Pre-commit tests** — husky now runs the fast unit suite alongside lint-staged
+
 ### Docs
 
 - Add README with setup guide, environment variable reference and full API documentation
@@ -35,6 +41,4 @@ First tagged state of the template. Everything below was shipped feature-by-feat
 
 ### Known gaps (at the time of release)
 
-- No test suite yet (`tests/` empty, no runner configured)
 - No Dockerfile or docker-compose setup
-- `.github/workflow/CI.yaml` exists but is empty

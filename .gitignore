@@ -8,3 +8,5 @@ coverage/
 .vscode/
 *.tsbuildinfo
 .husky/_
+# Jest integration runtime artifacts
+/tests/.mongo-uri

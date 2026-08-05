@@ -49,8 +49,8 @@ nodist/
 ├── public/                       # Static files — sample service worker (sw.js)
 ├── scripts/                      # Dev tooling (generate-vapid-keys)
 ├── docs/                         # In-depth guides (web-push.md, architecture.md)
-├── tests/                        # Test suites (empty for now — see Testing)
-└── .github/workflow/             # CI workflows (placeholder file, not filled in yet)
+├── tests/                        # Jest test suites — unit/ and integration/ (see Testing)
+└── .github/workflow/             # CI workflow — lint, type-check, test, build
 ```
 
 Every feature module follows the same shape, so learning one means you know them all:
@@ -85,6 +85,7 @@ src/modules/user/
 | Email | nodemailer 6 (SMTP) |
 | Logging | pino, pino-http, pino-pretty (dev) |
 | Security | helmet, cors, express-rate-limit, cookie-parser, compression |
+| Testing | Jest, ts-jest, supertest, mongodb-memory-server, ioredis-mock |
 | Tooling | tsx, husky, lint-staged, commitlint, eslint, prettier |
 
 ## Prerequisites
@@ -319,7 +320,36 @@ socket.on('notification', (notification) => {
 
 ## Testing
 
-There's no test suite yet. The `tests/` folder is empty and no test runner is configured. We know — it's near the top of the list. Until then, `pnpm lint` and `pnpm build` are your safety nets. `TODO: verify` — see [CONTRIBUTING.md](CONTRIBUTING.md) if you'd like to add the first tests.
+The project ships with a full Jest setup — **unit tests** (services, utils, validation schemas and middlewares, with mocked repositories/Redis/email) and **integration tests** (the real HTTP stack against an in-memory MongoDB and an in-memory Redis). No external services are needed to run them.
+
+```bash
+pnpm test              # run everything (unit + integration)
+pnpm test:unit         # fast unit tests only (also runs on every commit)
+pnpm test:integration  # HTTP-level integration tests
+pnpm test:watch        # watch mode
+pnpm test:coverage     # run everything with a coverage report
+pnpm test:typecheck    # type-check src/ + tests/ (strict mode)
+```
+
+Test layout:
+
+```
+tests/
+├── setup/             # env.ts — injects valid test env vars before config loads
+├── unit/              # mocked unit tests, one file per module
+└── integration/       # supertest against createApp() + in-memory MongoDB
+    ├── setup.ts       # mocks Redis (ioredis-mock) + mailSender, connects mongoose
+    ├── globalSetup.ts # boots mongodb-memory-server
+    └── globalTeardown.ts
+```
+
+A few things worth knowing:
+
+- The integration suite uses `mongodb-memory-server`, which downloads the MongoDB binary into a cache on the first run. It's a one-time cost; later runs are fast.
+- `NODE_ENV=test` env vars are injected by `tests/setup/env.ts` (via `setupFiles`) and never touch your real `.env`.
+- The pre-commit hook runs the unit suite so slow integration tests don't slow down every commit; the full suite runs in CI.
+
+## Docker
 
 ## Docker
 
@@ -332,9 +362,14 @@ No Dockerfile or docker-compose setup exists in this repo yet. If you need conta
 | `dev` | `tsx watch src/server.ts` | Hot-reloading dev server |
 | `build` | `tsc -p tsconfig.json && tsc-alias` | Type-check and compile to `dist/` (aliases resolved) |
 | `start` | `node dist/server.js` | Run the compiled build (run `build` first) |
-| `lint` | `eslint "src/**/*.ts"` | Lint all source files |
-| `lint:fix` | `eslint "src/**/*.ts" --fix` | Lint and auto-fix |
-| `format` | `prettier --write "src/**/*.ts"` | Format all source files |
+| `lint` | `eslint "src/**/*.ts" "tests/**/*.ts"` | Lint source and test files |
+| `lint:fix` | `eslint "src/**/*.ts" "tests/**/*.ts" --fix` | Lint and auto-fix |
+| `format` | `prettier --write "src/**/*.ts" "tests/**/*.ts"` | Format source and test files |
+| `test` | `jest` | Run the full test suite (unit + integration) |
+| `test:unit` | `jest --selectProjects unit` | Run unit tests only |
+| `test:integration` | `jest --selectProjects integration` | Run integration tests only |
+| `test:coverage` | `jest --coverage` | Run all tests with a coverage report |
+| `test:ci` | `jest --ci --coverage` | CI-friendly test run |
 | `generate:vapid` | `tsx scripts/generate-vapid-keys.ts` | Generate VAPID keys for web push |
 | `prepare` | `husky` | Install git hooks on `pnpm install` |
 

@@ -77,26 +77,35 @@ Keep the summary under ~70 chars, written in the imperative ("add", not "added")
 
 ## Before you open a PR
 
-Husky runs `lint-staged` on every commit, which lints and formats the staged files. On top of that, run the full checks locally:
+Husky runs `lint-staged` plus the unit test suite on every commit. On top of that, run the full checks locally:
 
 ```bash
-pnpm lint        # eslint on src/**/*.ts
+pnpm lint        # eslint on src/**/*.ts and tests/**/*.ts
+pnpm test        # unit + integration tests (integration needs no external services)
 pnpm build       # type-check + compile (strict mode, so this catches real issues)
 ```
 
-Both must pass. There's no `format` check in CI, but running `pnpm format` before pushing keeps diffs tidy.
+All three must pass. There's no `format` check in CI, but running `pnpm format` before pushing keeps diffs tidy.
 
 ## Testing
 
-`tests/` is currently empty and no test runner is configured — this is the biggest gap in the project, and test contributions are very welcome. If you add tests:
+Tests live in `tests/` and run with Jest (see the README **Testing** section for commands). Two projects are configured:
 
-- Put them in `tests/`, one folder per module (e.g. `tests/auth/`).
-- Wire the runner into `package.json` and document it in the README `Testing` section.
+- `tests/unit/**` — unit tests with mocked repositories, Redis and email. No database needed; this is the suite that runs in the pre-commit hook.
+- `tests/integration/**` — full HTTP flows through `createApp()` using `supertest`, an in-memory MongoDB (`mongodb-memory-server`) and an in-memory Redis (`ioredis-mock`).
+
+When adding or changing behaviour, please match the existing pattern:
+
+- Unit tests live in `tests/unit/<module>/<file>.test.ts` and mock the module's dependencies via `jest.mock` or injected fakes.
+- Integration tests exercise the HTTP layer only (no direct service calls) and clean up the collections they touch.
+- Test env vars are injected by `tests/setup/env.ts` — if a new required env var is added, add a value there too.
+- Keep `pnpm test` green before opening the PR; CI runs it with coverage.
 
 ## PR checklist
 
 - [ ] Branch is up to date with `main`
 - [ ] `pnpm lint` passes
+- [ ] `pnpm test` passes
 - [ ] `pnpm build` passes (this is the type-check)
 - [ ] Commit messages follow conventional commits
 - [ ] Only files related to this change are touched (no lockfile churn unless deps changed)
